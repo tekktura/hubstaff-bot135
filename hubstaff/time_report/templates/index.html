@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
+{% endblock %} 
+{% block title %}Hubstaff Time Report from API v1 - Enter Credentials{% endblock %}
+
+{% block content %}
+<form action="." method="get">
+<fieldset class="module aligned">
+    <h2>Just a header</h2>
+    {{ form }}
+</fieldset>
+</form>
+{% endblock %}
