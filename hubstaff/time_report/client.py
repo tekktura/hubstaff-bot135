@@ -1,4 +1,4 @@
-import petl
+import datetime
 import requests
 
 from .apps import API_BASE
@@ -48,6 +48,9 @@ class HubstaffApiClient():
         """
         Call the 'activities' endpoint to list all activities between 'start' and 'stop' time.
         """
+        # calculate timespan for one day equal to 'date
+        start = datetime.datetime.combine(date, datetime.time(0, 0, 0))
+        end = datetime.datetime.combine(date, datetime.time(23, 59, 59))
         return self._request("GET", "activities",
-            params={"start_time": "2020-07-01 00:00:00", "stop_time": "2020-07-01 23:59:59"}
-        ).get("activities", {})
+                             params={"start_time": start.isoformat(), "stop_time": end.isoformat()}
+                            ).get("activities", {})

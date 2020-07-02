@@ -1,3 +1,4 @@
+import petl
 import datetime
 from django import urls
 from django.http import HttpResponseRedirect
@@ -38,6 +39,7 @@ def index(request):
     context = {"form": auth_form}
     return render(request, 'index.html', context)
 
+
 def time_report(request):
     """
     The main view for the Time Report. Using the Auth Token retrieves the necessary data
@@ -50,9 +52,9 @@ def time_report(request):
             form_data = form.cleaned_data
             client = HubstaffApiClient(form_data["app_token"], form_data["auth_token"])
             try:
-                data.append(client.list_users())
-                data.append(client.list_projects())
-                data.append(client.list_activities_for_date(form_data["for_date"]))
+                petl.fromdicts(client.list_users())
+                petl.fromdicts(client.list_projects())
+                data = petl.fromdicts(client.list_activities_for_date(form_data["for_date"]))
             except HTTPError as e:
                 form.add_error(None, "The Hubstaff responded with an error: {} {}".format(
                     e.response.status_code, e.response.reason)

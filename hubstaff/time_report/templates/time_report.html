@@ -44,9 +44,12 @@
     </div>
     </fieldset>
 
+    {% if data %}
     <fieldset class="module aligned">
-        {{ data }}
+        <h1>Results for {{ form.for_date.value }}</h1>
+        <pre>{{ data }}</pre>
     </fieldset>
+    {% endif %}
 </form>
 
 </div>
