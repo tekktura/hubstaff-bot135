@@ -1,15 +1,41 @@
-{% extends "admin/base.html" %}
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
 
-{% block extrastyle %}
-<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css">
-{% endblock %} 
-{% block title %}Hubstaff Time Report from API v1 - Report Data{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="
+{% static "admin/css/base.css" %}">
+{{ form.media }}
+{% endblock %}
+
+{% block title %}Hubstaff Reporting from API - Report Data Browser{% endblock %}
+{% block branding %} <h1>Welcome to Hubstaff Reporting app</h1> {% endblock %}
+{% block content_title %}
+    <p><b>In order to access time reports about projects you participate in, please select for
+        which day you want the data for.</b></p>
+{% endblock %}
+{% block breadcrumbs %}{% endblock %}
 
 {% block content %}
-<form action="." method="get">
-<fieldset class="module aligned">
-    <h2>Just a header</h2>
+{% if form.errors and not form.non_field_errors %}
+<p class="errornote">
+{% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+</p>
+{% endif %}
 
-</fieldset>
+{% if form.non_field_errors %}
+{% for error in form.non_field_errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+
+<form action="." method="post" id=report-form">{% csrf_token %}
+  <div class="submit-row">
+    <label>&nbsp;</label><input type="submit" value="{% trans 'Submit' %}">
+  </div>
 </form>
+
+</div>
 {% endblock %}

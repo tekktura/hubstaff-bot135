@@ -1,6 +1,7 @@
 from django import urls
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.http import urlencode
 
 from .forms import CredentialsForm
 from .apps import Settings
@@ -17,7 +18,10 @@ def index(request):
             settings["app_token"] = auth_form.cleaned_data["app_token"]
             settings["username"] = auth_form.cleaned_data["username"]
             settings.save()
-            return HttpResponseRedirect(urls.reverse('time_report'))
+            user = auth_form.cleaned_data["user"]
+            return HttpResponseRedirect(
+                urls.reverse('time_report') + "?" + urlencode(user)
+            )
     else:
         auth_form = CredentialsForm(initial=settings)
 
