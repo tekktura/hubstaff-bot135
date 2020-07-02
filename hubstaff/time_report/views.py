@@ -7,13 +7,16 @@ from .apps import Settings
 
 def index(request):
     """
-    The main view used as an input point to the application, it will as the user for
-    credentials (App token, User, Password) to obtain the Auth token for further prcessing
+    The main view used as an input point to the application, it will ask the user for
+    credentials (App token, User, Password) to obtain the Auth token for further processing
     """
     settings = Settings()
     if request.method == 'POST':
         auth_form = CredentialsForm(request.POST)
         if auth_form.is_valid():
+            settings["app_token"] = auth_form.cleaned_data["app_token"]
+            settings["username"] = auth_form.cleaned_data["username"]
+            settings.save()
             return HttpResponseRedirect(urls.reverse('time_report'))
     else:
         auth_form = CredentialsForm(initial=settings)
@@ -23,7 +26,7 @@ def index(request):
 
 def time_report(request):
     """
-    The main view for the Time Report. Using the Auth Token retrieves the neccessary data
+    The main view for the Time Report. Using the Auth Token retrieves the necessary data
     and displays to the user as a table. Data can be downloaded to a CSV file.
     """
     return render(request, 'time_report.html')

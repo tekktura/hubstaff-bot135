@@ -1,4 +1,9 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from requests import HTTPError
+
+from .client import HubstaffApiClient
+
 
 class CredentialsForm(forms.Form):
     """
@@ -22,3 +27,18 @@ class CredentialsForm(forms.Form):
         required=True,
         help_text="IMPORTANT: Your password will not be stored anywhere"
     )
+
+    def clean(self):
+        try:
+            data = HubstaffApiClient().authenticate(
+                self.cleaned_data["app_token"],
+                self.cleaned_data["username"],
+                self.cleaned_data["password"],
+            )
+        except HTTPError as e:
+            if e.response.status_code == 401:
+                raise ValidationError("Invalid email and/or password")
+            elif e.response.status_code == 403:
+                raise ValidationError("API access is only for organizations on an active plan")
+        self.cleaned_data["user"] = data.get("user", {})
+        return self.cleaned_data

@@ -15,14 +15,11 @@ class Settings(dict):
     """
     SETTINGS_PATH = os.path.join(os.path.dirname(__file__), SETTINGS_FILE)
 
-    def __new__(cls):
-        return cls.load()
-
-    @classmethod
-    def load(cls):
-        with open(cls.SETTINGS_PATH, "r") as fp:
-            return json.load(fp)
+    def load(self):
+        with open(self.SETTINGS_PATH, "r") as fp:
+            self = json.load(fp)
+            return self
 
     def save(self):
         with open(self.SETTINGS_PATH, "w") as fp:
-            return json.dump(self, fp)
+            return json.dump(self, fp, indent=4)
