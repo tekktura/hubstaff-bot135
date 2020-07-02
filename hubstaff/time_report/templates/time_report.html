@@ -1,9 +1,9 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="
-{% static "admin/css/base.css" %}">
-{{ form.media }}
+{% block extrastyle %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+    {{ form.media }}
 {% endblock %}
 
 {% block title %}Hubstaff Reporting from API - Report Data Browser{% endblock %}
@@ -29,18 +29,24 @@
 {% endfor %}
 {% endif %}
 
-<div id="content-main">
+<div id="content-main" style="width: 25%">
 
 <form action="/time_report" method="post" id=report-form">{% csrf_token %}
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-  <div class="form-row">
-      {{ form.for_date.errors }}
-      <div>{{ form.for_date.label_tag }}</div> {{ form.for_date }}
-      <p class="help">{{ form.for_date.help_text }}</p>
-  </div>
-  <div class="submit-row">
-    <label>&nbsp;</label><input type="submit" value="{% trans 'Submit' %}">
-  </div>
+    <fieldset class="module aligned">
+    <div class="form-row">
+        {{ form.for_date.errors }}
+        <div>{{ form.for_date.label_tag }}</div> {{ form.for_date }}
+        <p class="help">{{ form.for_date.help_text }}</p>
+    </div>
+    <div class="submit-row">
+        <label>&nbsp;</label><input type="submit" value="{% trans 'Submit' %}">
+    </div>
+    </fieldset>
+
+    <fieldset class="module aligned">
+
+    </fieldset>
 </form>
 
 </div>
