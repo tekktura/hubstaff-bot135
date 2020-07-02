@@ -46,16 +46,16 @@ def time_report(request):
     """
     if request.method == 'POST':
         form = TimeReportForm(request.POST)
+        data = []
         if form.is_valid():
             form_data = form.cleaned_data
+            client = HubstaffApiClient(form_data["app_token"], form_data["auth_token"])
             try:
-                data = HubstaffApiClient(
-                    form_data["app_token"], form_data["auth_token"]
-                ).list_user_projects(form_data["id"])
+                data.append(client.list_user_projects(form_data["id"]))
+                data.append(client.list_activities_for_date(form_data["for_date"]))
             except HTTPError as e:
-                form.add_error(
-                    None, "The Hubstaff responded with an error: {} {}".format(
-                        e.response.status_code, e.response.reason)
+                form.add_error(None, "The Hubstaff responded with an error: {} {}".format(
+                    e.response.status_code, e.response.reason)
                 )
     else:
         form = TimeReportForm(request.GET)
@@ -63,5 +63,5 @@ def time_report(request):
                 form.data.get("id") and form.data.get("for_date")):
             return HttpResponseRedirect(urls.reverse('index'))
 
-    context = {"form": form}
+    context = {"form": form, "data": data}
     return render(request, 'time_report.html', context)
