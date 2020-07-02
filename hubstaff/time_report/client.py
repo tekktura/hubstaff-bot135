@@ -1,7 +1,8 @@
-import json
+import petl
 import requests
 
 from .apps import API_BASE
+
 
 class HubstaffApiClient():
     """
@@ -15,7 +16,9 @@ class HubstaffApiClient():
         response = requests.request(
             method,
             API_BASE + "/" + endpoint,
-            headers={"App-Token": self.app_token, "Auth-Token": self.auth_token},
+            headers={"App-Token": self.app_token,
+                     "Auth-Token": self.auth_token,
+                     "Accept": "application/json"},
             data=data,
             params=params
         )
@@ -26,13 +29,20 @@ class HubstaffApiClient():
         """
         Call the 'auth' endpoint and return a user object with auth token.
         """
-        return self._request("POST", "auth", data=dict(email=username, password=password))
+        return self._request("POST", "auth",
+                             data={"email": username, "password": password}).get("user", {})
 
     def list_projects(self):
         """
         Call the 'projects' endpoint to list all user projects.
         """
-        return self._request("GET", "projects")
+        return self._request("GET", "projects").get("projects", {})
+
+    def list_users(self):
+        """
+        Call the 'users' endpoint to list all user.
+        """
+        return self._request("GET", "users").get("users", {})
 
     def list_activities_for_date(self, date):
         """
@@ -40,4 +50,4 @@ class HubstaffApiClient():
         """
         return self._request("GET", "activities",
             params={"start_time": "2020-07-01 00:00:00", "stop_time": "2020-07-01 23:59:59"}
-        )
+        ).get("activities", {})

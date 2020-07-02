@@ -39,7 +39,7 @@ class CredentialsForm(forms.Form):
                 raise ValidationError("Invalid email and/or password")
             elif e.response.status_code == 403:
                 raise ValidationError("API access is only for organizations on an active plan")
-        self.cleaned_data["user"] = data.get("user", {})
+        self.cleaned_data["user"] = data
         return self.cleaned_data
 
 
