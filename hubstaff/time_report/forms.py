@@ -42,3 +42,14 @@ class CredentialsForm(forms.Form):
                 raise ValidationError("API access is only for organizations on an active plan")
         self.cleaned_data["user"] = data.get("user", {})
         return self.cleaned_data
+
+
+class TimeReportForm(forms.Form):
+    """
+    This form is used to provide date for which time report will be obtained.
+    """
+    for_date = forms.DateField(
+        label="Date",
+        required=True,
+        help_text="Accepts a variety of date formats"
+    )

@@ -15,10 +15,9 @@ class Settings(dict):
     """
     SETTINGS_PATH = os.path.join(os.path.dirname(__file__), SETTINGS_FILE)
 
-    def load(self):
+    def __init__(self):
         with open(self.SETTINGS_PATH, "r") as fp:
-            self = json.load(fp)
-            return self
+            self.update(json.load(fp))
 
     def save(self):
         with open(self.SETTINGS_PATH, "w") as fp:
