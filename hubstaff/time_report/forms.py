@@ -30,7 +30,7 @@ class CredentialsForm(forms.Form):
 
     def clean(self):
         try:
-            data = HubstaffApiClient(self.cleaned_data["app_token"]).authenticate(
+            user_data = HubstaffApiClient(self.cleaned_data["app_token"]).authenticate(
                 self.cleaned_data["username"],
                 self.cleaned_data["password"],
             )
@@ -39,7 +39,11 @@ class CredentialsForm(forms.Form):
                 raise ValidationError("Invalid email and/or password")
             elif e.response.status_code == 403:
                 raise ValidationError("API access is only for organizations on an active plan")
-        self.cleaned_data["user"] = data
+            else:
+                raise(ValidationError("Authentication failed ({} {})".format(
+                    e.response.status_code, e.response.reason
+                )))
+        self.cleaned_data["user"] = user_data
         return self.cleaned_data
 
 

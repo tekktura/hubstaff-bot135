@@ -45,20 +45,34 @@ def time_report(request):
     The main view for the Time Report. Using the Auth Token retrieves the necessary data
     and displays to the user as a table. Data can be downloaded to a CSV file.
     """
-    data = []
+    data = None
     if request.method == 'POST':
         form = TimeReportForm(request.POST)
         if form.is_valid():
             form_data = form.cleaned_data
             client = HubstaffApiClient(form_data["app_token"], form_data["auth_token"])
             try:
-                petl.fromdicts(client.list_users())
-                petl.fromdicts(client.list_projects())
-                data = petl.fromdicts(client.list_activities_for_date(form_data["for_date"]))
+                users_t = (petl.fromdicts(client.list_users())
+                           .cut("id", "name").rename("name", "user"))
+                projects_t = (petl.fromdicts(client.list_projects())
+                              .cut("id", "name").rename("name", "project"))
+                main_t = petl.fromdicts(client.list_activities_for_date(form_data["for_date"]))
             except HTTPError as e:
                 form.add_error(None, "The Hubstaff responded with an error: {} {}".format(
                     e.response.status_code, e.response.reason)
                 )
+            # Now some PETL processing, remove unnecessary fields, join with 'users' and
+            # 'projects' tables, aggregate on time spend and pivot, apply some nice
+            # formatting to time values
+            data = (main_t
+                    .cut("user_id", "project_id", "tracked")
+                    .join(users_t, lkey="user_id", rkey="id")
+                    .join(projects_t, lkey="project_id", rkey="id")
+                    .aggregate(("user", "project"), sum, "tracked")
+                    .convert("value", )
+                    .pivot("project", "user", "value", sum)
+            ).look(25)
+
     else:
         form = TimeReportForm(request.GET)
         if not (form.data.get("app_token") and
@@ -69,5 +83,5 @@ def time_report(request):
         ):
             return HttpResponseRedirect(urls.reverse('index'))
 
-    context = {"form": form, "data": data}
+    context = {"form": form, "table": data}
     return render(request, 'time_report.html', context)
