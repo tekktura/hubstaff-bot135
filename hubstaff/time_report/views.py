@@ -1,7 +1,9 @@
+from django import urls
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+
 from .forms import CredentialsForm
 from .apps import Settings
-
 
 def index(request):
     """
@@ -9,8 +11,10 @@ def index(request):
     credentials (App token, User, Password) to obtain the Auth token for further prcessing
     """
     settings = Settings()
-    if request.POST:
+    if request.method == 'POST':
         auth_form = CredentialsForm(request.POST)
+        if auth_form.is_valid():
+            return HttpResponseRedirect(urls.reverse('time_report'))
     else:
         auth_form = CredentialsForm(initial=settings)
 
