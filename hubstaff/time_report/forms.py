@@ -6,6 +6,7 @@ class CredentialsForm(forms.Form):
     saved anywhere and is only used once. App Token and user name mae be saved to a local file.
     """
     app_token = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': 45, 'rows': 3}),
         label="App Token",
         required=True,
         help_text="Please find your app token in https://app.hubstaff.com/developer/my_apps"

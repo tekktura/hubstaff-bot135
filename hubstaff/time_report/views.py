@@ -1,12 +1,19 @@
 from django.shortcuts import render
 from .forms import CredentialsForm
+from .apps import Settings
+
 
 def index(request):
     """
     The main view used as an input point to the application, it will as the user for
     credentials (App token, User, Password) to obtain the Auth token for further prcessing
     """
-    auth_form = CredentialsForm(request.POST or {})
+    settings = Settings()
+    if request.POST:
+        auth_form = CredentialsForm(request.POST)
+    else:
+        auth_form = CredentialsForm(initial=settings)
+
     context = {"form": auth_form}
     return render(request, 'index.html', context)
 
