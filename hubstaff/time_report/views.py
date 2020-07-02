@@ -3,7 +3,9 @@ from django import urls
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.http import urlencode
+from requests import HTTPError
 
+from .client import HubstaffApiClient
 from .forms import CredentialsForm, TimeReportForm
 from .apps import Settings
 
@@ -23,6 +25,7 @@ def index(request):
             yesterday = datetime.date.today() - datetime.timedelta(days=1)
             params = {
                 "app_token": auth_form.cleaned_data["app_token"],
+                "auth_token": user["auth_token"],
                 "id": user["id"],
                 "name": user["name"],
                 "for_date": yesterday,
@@ -42,9 +45,23 @@ def time_report(request):
     and displays to the user as a table. Data can be downloaded to a CSV file.
     """
     if request.method == 'POST':
-        report_form = TimeReportForm(request.POST)
+        form = TimeReportForm(request.POST)
+        if form.is_valid():
+            form_data = form.cleaned_data
+            try:
+                data = HubstaffApiClient(
+                    form_data["app_token"], form_data["auth_token"]
+                ).list_user_projects(form_data["id"])
+            except HTTPError as e:
+                form.add_error(
+                    None, "The Hubstaff responded with an error: {} {}".format(
+                        e.response.status_code, e.response.reason)
+                )
     else:
-        report_form = TimeReportForm(request.GET)
+        form = TimeReportForm(request.GET)
+        if not (form.data.get("app_token") and form.data.get("auth_token") and form.data.get("name") and
+                form.data.get("id") and form.data.get("for_date")):
+            return HttpResponseRedirect(urls.reverse('index'))
 
-    context = {"form": report_form}
+    context = {"form": form}
     return render(request, 'time_report.html', context)

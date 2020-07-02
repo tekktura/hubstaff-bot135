@@ -30,8 +30,7 @@ class CredentialsForm(forms.Form):
 
     def clean(self):
         try:
-            data = HubstaffApiClient().authenticate(
-                self.cleaned_data["app_token"],
+            data = HubstaffApiClient(self.cleaned_data["app_token"]).authenticate(
                 self.cleaned_data["username"],
                 self.cleaned_data["password"],
             )
@@ -54,5 +53,6 @@ class TimeReportForm(forms.Form):
         help_text="Accepts a variety of date formats"
     )
     app_token = forms.CharField(widget=forms.HiddenInput)
+    auth_token = forms.CharField(widget=forms.HiddenInput)
     name = forms.CharField(widget=forms.HiddenInput)
     id = forms.IntegerField(widget=forms.HiddenInput)
