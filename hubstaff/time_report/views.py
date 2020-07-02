@@ -9,6 +9,7 @@ from requests import HTTPError
 from .client import HubstaffApiClient
 from .forms import CredentialsForm, TimeReportForm
 from .apps import Settings
+from .utils import convert_seconds_to_human
 
 
 def index(request):
@@ -60,7 +61,7 @@ def time_report(request):
             except HTTPError as e:
                 form.add_error(None, "The Hubstaff responded with an error: {} {}".format(
                     e.response.status_code, e.response.reason)
-                )
+                               )
             # Now some PETL processing, remove unnecessary fields, join with 'users' and
             # 'projects' tables, aggregate on time spend and pivot, apply some nice
             # formatting to time values
@@ -69,18 +70,14 @@ def time_report(request):
                     .join(users_t, lkey="user_id", rkey="id")
                     .join(projects_t, lkey="project_id", rkey="id")
                     .aggregate(("user", "project"), sum, "tracked")
-                    .convert("value", )
-                    .pivot("project", "user", "value", sum)
-            ).look(25)
+                    .convert("value", convert_seconds_to_human)
+                    .pivot("project", "user", "value", lambda any: any[0])
+                    )
 
     else:
         form = TimeReportForm(request.GET)
-        if not (form.data.get("app_token") and
-                form.data.get("auth_token") and
-                form.data.get("name") and
-                form.data.get("id") and
-                form.data.get("for_date")
-        ):
+        if not form.data.get("app_token") or not form.data.get("auth_token") or not form.data.get(
+                "name") or not form.data.get("id") or not form.data.get("for_date"):
             return HttpResponseRedirect(urls.reverse('index'))
 
     context = {"form": form, "table": data}

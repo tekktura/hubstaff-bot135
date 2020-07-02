@@ -6,7 +6,7 @@ from .apps import API_BASE
 
 class HubstaffApiClient():
     """
-    Encalspulates all the communication with Hubstaff API.
+    Encaspulates all the communication with Hubstaff API.
     """
     def __init__(self, app_token, auth_token=""):
         self.app_token = app_token
