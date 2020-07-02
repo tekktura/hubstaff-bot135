@@ -3,7 +3,7 @@ from django import forms
 class CredentialsForm(forms.Form):
     """
     This form is used to obtain user credentials as well as the App Token. The password is not
-    saved anywhere and is only used once. App Token and user name mae be saved to a local file.
+    saved anywhere and is only used once. App Token and username may be saved to a local file.
     """
     app_token = forms.CharField(
         widget=forms.Textarea(attrs={'cols': 45, 'rows': 3}),
