@@ -6,18 +6,18 @@ class CredentialsForm(forms.Form):
     saved anywhere and is only used once. App Token and user name mae be saved to a local file.
     """
     app_token = forms.CharField(
-        label="Hubstaff App Token",
+        label="App Token",
         required=True,
-        help_text="Please find your app token in <a href=''><a>"
+        help_text="Please find your app token in https://app.hubstaff.com/developer/my_apps"
     )
     username = forms.EmailField(
-        label="Hubstaff Username",
+        label="Username",
         required=True,
-        help_text="Please provide your Hubstaff username (as email)"
+        help_text="Please provide your Hubstaff username (email)"
     )
     password = forms.CharField(
         widget=forms.PasswordInput,
-        label="Hubstaff Password",
+        label="Password",
         required=True,
-       help_text="IMPORTANT: Your password will not be stored anywhere"
+        help_text="IMPORTANT: Your password will not be stored anywhere"
     )

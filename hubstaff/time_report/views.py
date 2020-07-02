@@ -6,7 +6,8 @@ def index(request):
     The main view used as an input point to the application, it will as the user for
     credentials (App token, User, Password) to obtain the Auth token for further prcessing
     """
-    context = {"form": CredentialsForm(request.GET)}
+    auth_form = CredentialsForm(request.POST or {})
+    context = {"form": auth_form}
     return render(request, 'index.html', context)
 
 def time_report(request):
