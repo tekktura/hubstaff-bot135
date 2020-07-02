@@ -53,3 +53,6 @@ class TimeReportForm(forms.Form):
         required=True,
         help_text="Accepts a variety of date formats"
     )
+    app_token = forms.CharField(widget=forms.HiddenInput)
+    name = forms.CharField(widget=forms.HiddenInput)
+    id = forms.IntegerField(widget=forms.HiddenInput)

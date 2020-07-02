@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block title %}Hubstaff Reporting from API - Report Data Browser{% endblock %}
-{% block branding %} <h1>Welcome to Hubstaff Reporting app</h1> {% endblock %}
+{% block branding %} <h1>Welcome {{ form.name.value }}</h1> {% endblock %}
 {% block content_title %}
     <p><b>In order to access time reports about projects you participate in, please select for
         which day you want the data for.</b></p>
@@ -32,6 +32,7 @@
 <div id="content-main">
 
 <form action="/time_report" method="post" id=report-form">{% csrf_token %}
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
   <div class="form-row">
       {{ form.for_date.errors }}
       <div>{{ form.for_date.label_tag }}</div> {{ form.for_date }}
