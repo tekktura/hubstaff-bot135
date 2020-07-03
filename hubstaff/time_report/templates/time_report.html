@@ -40,7 +40,7 @@
         <p class="help">{{ form.for_date.help_text }}</p>
     </div>
     <div class="submit-row">
-        <label>&nbsp;</label><input type="submit" value="{% trans 'Submit' %}">
+        <label>&nbsp;</label><input type="submit" name="action" value="{% trans 'Submit' %}">
     </div>
     </fieldset>
 
@@ -48,7 +48,7 @@
     {% if submitted %}
         <h2>Results of time spend on projects on {{ form.for_date.value }}</h2>
     {% if table %}
-        <pre>{{ table }}</pre> <hr>
+        <p>{{ table|safe }}</p> <hr>
     {% else %}
         <h3>No time entries found for selected day</h3>
     {% endif %}
@@ -58,7 +58,7 @@
             {{ form.format.label_tag }} {{ form.format }}
         </div>
         <div class="submit-row">
-            <label> </label><input type="submit" value="{% trans 'Download' %}">
+            <label> </label><input type="submit" name="action" value="{% trans 'Download' %}">
         </div>
     {% else %}
         <input type="hidden" name="{{ form.format.html_name }}" value="{{ form.format.value }}">

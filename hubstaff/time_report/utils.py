@@ -10,9 +10,9 @@ def factor_seconds(seconds):
     return hours, minutes, seconds
 
 
-def convert_seconds_to_excel(seconds):
+def convert_seconds_to_iso(seconds):
     """
-    Converts given number of seconds to Excel time format
+    Converts given number of seconds to Excel/CSV/ISO time format
     """
     return datetime.time(*factor_seconds(seconds)).isoformat()
 

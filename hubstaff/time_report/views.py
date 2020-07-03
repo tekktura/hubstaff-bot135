@@ -1,5 +1,5 @@
 import petl
-import datetime
+
 from django import urls
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -9,7 +9,7 @@ from requests import HTTPError
 from .client import HubstaffApiClient
 from .forms import CredentialsForm, TimeReportForm
 from .apps import Settings
-from .utils import convert_seconds_to_human
+from .utils import *
 
 
 def index(request):
@@ -71,10 +71,18 @@ def time_report(request):
                         .join(users_t, lkey="user_id", rkey="id")
                         .join(projects_t, lkey="project_id", rkey="id")
                         .aggregate(("user", "project"), sum, "tracked")
-                        .convert("value", convert_seconds_to_human)
+                        .convert("value",
+                                 convert_seconds_to_iso if form_data["format"] == "csv" else
+                                 convert_seconds_to_human
+                                 )
                         .pivot("project", "user", "value", lambda a: a[0])
                         )
-
+                if request.POST.get("action") == "Download":
+                    pass
+                else:
+                    buf = petl.MemorySource()
+                    data.tohtml(buf, encoding="utf-8")
+                    data = buf.getvalue().decode()
     else:
         form = TimeReportForm(request.GET)
         if not form.data.get("app_token") or not form.data.get("auth_token") or not form.data.get(
