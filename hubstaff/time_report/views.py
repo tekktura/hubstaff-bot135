@@ -1,7 +1,7 @@
 import petl
 
 from django import urls
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.utils.http import urlencode
 from requests import HTTPError
@@ -78,7 +78,27 @@ def time_report(request):
                         .pivot("project", "user", "value", lambda a: a[0])
                         )
                 if request.POST.get("action") == "Download":
-                    pass
+                    filename = "activities_report_{}.{}".format(
+                        form_data["for_date"].strftime("%Y%m%d"), form_data["format"]
+                    )
+                    resp = HttpResponse(content_type='text/{}'.format(
+                        form_data["format"] if form_data["format"] != "txt" else "plain"
+                    ))
+                    resp['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+                    if form_data["format"] == "html":
+                        buf = petl.MemorySource()
+                        resp.write("<!DOCTYPE html><html><body>")
+                        resp.write("<style type='text/css'>table,th,td {border: solid}</style>")
+                        data.tohtml(buf, encoding="utf-8")
+                        resp.write(buf.getvalue().decode())
+                        resp.write("</body></html>")
+                    elif form_data["format"] == "csv":
+                        buf = petl.MemorySource()
+                        data.tocsv(buf, encoding="utf-8")
+                        resp.write(buf.getvalue().decode())
+                    elif form_data["format"] == "txt":
+                        resp.write(data.lookall())
+                    return resp
                 else:
                     buf = petl.MemorySource()
                     data.tohtml(buf, encoding="utf-8")

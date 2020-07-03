@@ -53,7 +53,7 @@ class TimeReportForm(forms.Form):
     """
     FORMAT_CHOICES = (
         ("html", "HTML"),
-        ("plain", "Plain Text"),
+        ("txt", "Plain Text"),
         ("csv", "Excel/CSV"),
     )
 
