@@ -8,10 +8,6 @@
 
 {% block title %}Hubstaff Reporting from API - Report Data Browser{% endblock %}
 {% block branding %} <h1>Welcome {{ form.name.value }}</h1> {% endblock %}
-{% block content_title %}
-    <p><b>In order to access time reports about projects you participate in, please select for
-        which day you want the data for.</b></p>
-{% endblock %}
 {% block breadcrumbs %}{% endblock %}
 
 {% block content %}
@@ -32,6 +28,8 @@
 <div id="content-main" style="width: 33%">
 
 <form action="/time_report" method="post" id=report-form">{% csrf_token %}
+    <h1>Hubstaff Activities Report</h1>
+    <h3>Please select date for which you want the report data</h3>
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
     <fieldset class="module aligned">
     <div class="form-row">
@@ -46,14 +44,16 @@
 
     <fieldset class="module aligned">
     {% if submitted %}
-        <h2>Results of time spend on projects on {{ form.for_date.value }}</h2>
+        <h1>Activities report for {{ form.for_date.value }}</h1>
     {% if table %}
-        <p>{{ table|safe }}</p> <hr>
+        <style type="text/css">.petl { width: 100% }</style>
+        <p>{{ table|safe }}</p>
     {% else %}
         <h3>No time entries found for selected day</h3>
     {% endif %}
     {% endif %}
     {% if submitted and table %}
+        <h1>Report options</h1>
         <div class="form-row">
             {{ form.format.label_tag }} {{ form.format }}
         </div>
