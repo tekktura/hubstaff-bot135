@@ -36,7 +36,7 @@
     <fieldset class="module aligned">
     <div class="form-row">
         {{ form.for_date.errors }}
-        <div>{{ form.for_date.label_tag }}</div> {{ form.for_date }}
+        {{ form.for_date.label_tag }} {{ form.for_date }}
         <p class="help">{{ form.for_date.help_text }}</p>
     </div>
     <div class="submit-row">
@@ -45,10 +45,24 @@
     </fieldset>
 
     <fieldset class="module aligned">
-        {% if table %}
+    {% if submitted %}
         <h2>Results of time spend on projects on {{ form.for_date.value }}</h2>
-        <pre>{{ table }}</pre>
-        {% endif %}
+    {% if table %}
+        <pre>{{ table }}</pre> <hr>
+    {% else %}
+        <h3>No time entries found for selected day</h3>
+    {% endif %}
+    {% endif %}
+    {% if submitted and table %}
+        <div class="form-row">
+            {{ form.format.label_tag }} {{ form.format }}
+        </div>
+        <div class="submit-row">
+            <label> </label><input type="submit" value="{% trans 'Download' %}">
+        </div>
+    {% else %}
+        <input type="hidden" name="{{ form.format.html_name }}" value="{{ form.format.value }}">
+    {% endif %}
     </fieldset>
 </form>
 

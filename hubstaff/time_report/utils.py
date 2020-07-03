@@ -21,4 +21,5 @@ def convert_seconds_to_human(seconds):
     """
     Converts seconds to human readable string.
     """
-    return "{}h {}m".format(*(factor_seconds(seconds)[:2]))
+    hours, minutes, _ = factor_seconds(seconds)
+    return ("{}h ".format(hours) if hours else "") + "{}m".format(minutes)

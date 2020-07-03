@@ -32,6 +32,7 @@ def index(request):
                 "id": user["id"],
                 "name": user["name"],
                 "for_date": yesterday,
+                "format": TimeReportForm.FORMAT_CHOICES[0][0],
             }
             return HttpResponseRedirect(urls.reverse('time_report') + "?" + urlencode(params))
     else:
@@ -62,17 +63,17 @@ def time_report(request):
                 form.add_error(None, "The Hubstaff responded with an error: {} {}".format(
                     e.response.status_code, e.response.reason)
                                )
-            # Now some PETL processing, remove unnecessary fields, join with 'users' and
-            # 'projects' tables, aggregate on time spend and pivot, apply some nice
-            # formatting to time values
-            data = (main_t
-                    .cut("user_id", "project_id", "tracked")
-                    .join(users_t, lkey="user_id", rkey="id")
-                    .join(projects_t, lkey="project_id", rkey="id")
-                    .aggregate(("user", "project"), sum, "tracked")
-                    .convert("value", convert_seconds_to_human)
-                    .pivot("project", "user", "value", lambda any: any[0])
-                    )
+            if main_t.nrows() > 0:
+                # Now some PETL processing, remove unnecessary fields, join with 'users' and
+                # 'projects' tables, aggregate on time spend and pivot, apply formatting to time
+                data = (main_t
+                        .cut("user_id", "project_id", "tracked")
+                        .join(users_t, lkey="user_id", rkey="id")
+                        .join(projects_t, lkey="project_id", rkey="id")
+                        .aggregate(("user", "project"), sum, "tracked")
+                        .convert("value", convert_seconds_to_human)
+                        .pivot("project", "user", "value", lambda a: a[0])
+                        )
 
     else:
         form = TimeReportForm(request.GET)
@@ -80,5 +81,5 @@ def time_report(request):
                 "name") or not form.data.get("id") or not form.data.get("for_date"):
             return HttpResponseRedirect(urls.reverse('index'))
 
-    context = {"form": form, "table": data}
+    context = {"form": form, "table": data, "submitted": request.method == 'POST'}
     return render(request, 'time_report.html', context)

@@ -51,6 +51,12 @@ class TimeReportForm(forms.Form):
     """
     This form is used to provide date for which time report will be obtained.
     """
+    FORMAT_CHOICES = (
+        ("html", "HTML"),
+        ("plain", "Plain Text"),
+        ("csv", "Excel/CSV"),
+    )
+
     for_date = forms.DateField(
         label="Date",
         required=True,
@@ -60,3 +66,10 @@ class TimeReportForm(forms.Form):
     auth_token = forms.CharField(widget=forms.HiddenInput)
     name = forms.CharField(widget=forms.HiddenInput)
     id = forms.IntegerField(widget=forms.HiddenInput)
+    format = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        label="Output format",
+        required=True,
+        choices=FORMAT_CHOICES,
+        initial="html"
+    )
